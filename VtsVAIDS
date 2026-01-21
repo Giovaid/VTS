@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valentinstags-Date 💜 </title>
+<style>
+/* --- Global --- */
+html, body {
+margin: 0;
+padding: 0;
+width: 100%;
+min-height: 100vh;
+font-family: 'Poppins', sans-serif;
+background: #fff0f5;
+display: flex;
+justify-content: center;
+align-items: center;
+}
+.screen {
+position: absolute;
+width: 100%;
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+transition: opacity 0.5s ease;
+}
+.hidden {
+opacity: 0;
+pointer-events: none;
+}
+h1 {
+font-size: 2rem;
+color: #d07fff;
+text-align: center;
+margin: 20px;
+animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+0%,100%{transform: scale(1);}
+50%{transform: scale(1.05);}
+}
+/* --- Buttons --- */
+button {
+font-size: 1.2rem;
+padding: 12px 30px;
+margin: 15px;
+border-radius: 50px;
+border: none;
+cursor: pointer;
+transition: all 0.3s ease;
+box-shadow: 0 4px 15px rgba(208,127,255,0.4);
+}
+.yes-btn {
+color: #fff;
+background: linear-gradient(45deg, #d07fff, #ffb6c1);
+}
+.no-btn {
+background: #ff6b81;
+color: #fff;
+position: relative;
+.yes-btn:hover { transform: scale(1.1); box-shadow: 0 6px 20px rgba(208,127,255,0.6); }
+}
+/* --- Quiz --- */
+.quiz-container { display: flex; flex-direction: column; align-items: center; text-align: center;
+padding: 0 20px; }
+.question { font-size: 1.5rem; margin: 20px 0; }
+.answers button { display: block; margin: 10px 0; width: 60%; max-width: 300px; background:
+#d07fff80; color: #fff; }
+/* --- Progress --- */
+.progress-bar { width: 60%; max-width: 300px; height: 10px; background: #eee; border-radius:
+5px; margin: 20px 0; overflow: hidden; }
+.progress { height: 100%; width: 0; background: linear-gradient(90deg,#d07fff,#ffb6c1);
+transition: width 0.4s; }
+/* --- Gift Cards --- */
+.gifts { display: flex; flex-direction: column; align-items: center; gap: 15px; }
+.gift-card { width: 60%; max-width: 300px; background: #fff; border-radius: 15px; padding:
+20px; text-align: center; box-shadow: 0 5px 15px rgba(208,127,255,0.3); cursor: pointer;
+transition: transform 0.4s, box-shadow 0.4s; }
+.gift-card:hover { transform: scale(1.05); box-shadow: 0 8px 25px rgba(208,127,255,0.5); }
+/* --- Reveal --- */
+opacity: 0; }
+@keyframes fadeIn { to{opacity:1;} }
+.reveal { margin-top: 20px; font-size: 1.2rem; color: #d07fff; animation: fadeIn 1s forwards;
+/* --- Confetti --- */
+.confetti { position: absolute; top:0; width:100%; height:100%; pointer-events:none;
+overflow:hidden; }
+.confetti-piece { position:absolute; width:10px; height:10px; background:#d07fff; animation: fall
+3s linear infinite; }
+@keyframes fall { 0%{transform:translateY(-20px) rotate(0deg);} 100%
+{transform:translateY(100vh) rotate(360deg);} }
+/* --- Responsive --- */
+@media(max-width:600px){ h1{font-size:1.8rem;} .question{font-size:1.3rem;} }
+@media(min-width:601px) and (max-width:1024px){ h1{font-size:2rem;} .question{font-
+size:1.4rem;} }
+@media(min-width:1025px){ h1{font-size:2.5rem;} .question{font-size:1.6rem;} .answers button,
+.gift-card{width:300px;} }
+</style>
+</head>
+<body>
+<!-- Startscreen -->
+<div id="start-screen" class="screen">
+<h1>Willst du mein Valentinstags-Date sein? 💜 </h1>
+<div>
+<button id="yesBtn" class="yes-btn">Ja 💜 </button>
+<button id="noBtn" class="no-btn">Nein 😅 </button>
+</div>
+</div>
+<!-- Quiz Screen -->
+<div id="quiz-screen" class="screen hidden">
+<div class="quiz-container">
+<div class="progress-bar"><div class="progress" id="progress"></div></div>
+<div id="question" class="question"></div>
+<div class="answers" id="answers"></div>
+</div>
+</div>
+<!-- Gift Screen -->
+<div id="gift-screen" class="screen hidden">
+<h1>Du hast es geschafft 💜 Wähle dein Geschenk…</h1>
+<div class="gifts">
+<div class="gift-card" data-reveal="🎬 schauen und kuscheln.">🎬 Netflix & Chill Date</div>
+<div class="gift-card" data-reveal="🪂 Wolken.">🪂 Fallschirmspringen</div>
+<div class="gift-card" data-reveal="🍷 zweit.">🍷 Fancy Essen gehen</div>
+</div>
+<div class="reveal" id="revealText"></div>
+</div>
+Netflix & Chill Date – Gemütlich zusammen Filme
+Fallschirmspringen – Ein Abenteuer hoch über den
+Fancy Essen gehen – Romantisches Dinner zu
+<!-- Confetti -->
+<div class="confetti" id="confetti"></div>
+<script>
+const noBtn=document.getElementById('noBtn');
+const yesBtn=document.getElementById('yesBtn');
+const startScreen=document.getElementById('start-screen');
+const quizScreen=document.getElementById('quiz-screen');
+const giftScreen=document.getElementById('gift-screen');
+const questionEl=document.getElementById('question');
+const answersEl=document.getElementById('answers');
+const progressEl=document.getElementById('progress');
+const revealText=document.getElementById('revealText');
+const confettiEl=document.getElementById('confetti');
+// Ausweichender Nein-Button
+noBtn.addEventListener('mouseenter',()=>{
+const x=Math.random()*60-30;
+const y=Math.random()*60-30;
+noBtn.style.transform=`translate(${x}px, ${y}px)`;
+});
+// Ja Button
+yesBtn.addEventListener('click',()=>{
+startScreen.classList.add('hidden');
+quizScreen.classList.remove('hidden');
+loadQuestion();
+});
+// Quiz-Daten
+const quiz=[
+{q:"Wie heißen wir beide?", a:["Georgian & Klärchen","John & Mary","Max & Lisa"], correct:0},
+{q:"Was ist unser Lieblingsfilm?", a:["Inception","Titanic","Frozen"], correct:0},
+{q:"Lieblingsfarbe deiner Freundin?", a:["Lila","Blau","Rot"], correct:0},
+{q:"Unser Insiderwitz?", a:["Spiralrutsche","Keksmonster","Moonwalk"], correct:0},
+{q:"Erstes Date Ort?", a:["Café","Park","Kino"], correct:0},
+{q:"Lieblingssnack?", a:["Popcorn","Chips","Schokolade"], correct:2},
+];
+let current=0;
+let score=0;
+function loadQuestion(){
+if(current>=quiz.length){endQuiz(); return;}
+const q=quiz[current];
+questionEl.textContent=q.q;
+answersEl.innerHTML='';
+q.a.forEach((ans,i)=>{
+const btn=document.createElement('button');
+btn.textContent=ans;
+btn.addEventListener('click',()=>{
+if(i===q.correct) score++;
+current++;
+progressEl.style.width=((current/quiz.length)*100)+'%';
+loadQuestion();
+});
+answersEl.appendChild(btn);
+});
+}
+function endQuiz(){
+quizScreen.classList.add('hidden');
+giftScreen.classList.remove('hidden');
+startConfetti();
+}
+// Geschenk Reveal
+document.querySelectorAll('.gift-card').forEach(card=>{
+card.addEventListener('click',()=>{
+revealText.textContent=card.dataset.reveal;
+});
+});
+// Confetti
+function startConfetti(){
+for(let i=0;i<50;i++){
+const piece=document.createElement('div');
+piece.classList.add('confetti-piece');
+piece.style.left=Math.random()*100+'vw';
+piece.style.animationDelay=Math.random()*3+'s';
+confettiEl.appendChild(piece);
+}
+}
+</script>
+</body>
+</html>
